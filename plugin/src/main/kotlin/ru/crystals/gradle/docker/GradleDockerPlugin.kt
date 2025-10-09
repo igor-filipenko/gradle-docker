@@ -4,6 +4,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 import org.gradle.api.internal.attributes.AttributesFactory
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.model.ObjectFactory
@@ -87,22 +88,26 @@ class GradleDockerPlugin: Plugin<Project> {
             val dockerDir = "${project.layout.buildDirectory}/docker"
             clean.configure { it.delete(dockerDir) }
 
-            prepare.apply {
-                with(ext.copySpec)
-                from(ext.resolvedDockerfile) {
-                    it.rename { fileName ->
-                        fileName.replace(ext.resolvedDockerfile.name, "Dockerfile")
+            prepare.configure { task ->
+                task.with(ext.copySpec)
+                ext.resolvedDockerfile?.let { dockerfile ->
+                    task.from(dockerfile) {
+                        it.rename { fileName ->
+                            dockerfile.name.let { dockerfileName ->
+                                fileName.replace(dockerfileName, "Dockerfile")
+                            }
+                        }
                     }
                 }
-                into(dockerDir)
+                task.into(dockerDir)
             }
 
-            exec.apply {
-                workingDir = dockerDir
-                commandLine = buildCommandLine(ext)
-                dependsOn(ext.dependencies)
-                logging.captureStandardOutput(LogLevel.INFO)
-                logging.captureStandardError(LogLevel.ERROR)
+            exec.configure { task ->
+                task.workingDir = project.file(dockerDir)
+                task.commandLine = buildCommandLine(ext)
+                task.dependsOn(ext.dependencies)
+                task.logging.captureStandardOutput(LogLevel.INFO)
+                task.logging.captureStandardError(LogLevel.ERROR)
             }
 
             val tags = mutableMapOf<String, TagConfig>()
@@ -123,7 +128,7 @@ class GradleDockerPlugin: Plugin<Project> {
 
                     tags[taskName] = TagConfig(
                         tagName = unresolvedTagName,
-                        tagTask = { computeName(ext.name, unresolvedTagName) }
+                        tagTask = { computeName(ext.name ?: "", unresolvedTagName) }
                     )
                 }
             }
@@ -132,8 +137,8 @@ class GradleDockerPlugin: Plugin<Project> {
                 val tagSubTask = project.tasks.create("dockerTag$taskName", Exec::class.java) {
                     it.group = "Docker"
                     it.description = "Tags Docker image with tag '${tagConfig.tagName}'"
-                    it.workingDir = dockerDir
-                    it.commandLine("docker", "tag", { ext.name }, { tagConfig.tagTask() })
+                    it.workingDir = project.file(dockerDir)
+                    it.commandLine("docker", "tag", ext.name ?: "", tagConfig.tagTask())
                     it.dependsOn(exec)
                 }
                 tag.dependsOn(tagSubTask)
@@ -141,8 +146,8 @@ class GradleDockerPlugin: Plugin<Project> {
                 val pushSubTask = project.tasks.create("dockerPush$taskName", Exec::class.java) {
                     it.group = "Docker"
                     it.description = "Pushes the Docker image with tag '${tagConfig.tagName}' to configured Docker Hub"
-                    it.workingDir = dockerDir
-                    it.commandLine("docker", "push", { tagConfig.tagTask() })
+                    it.workingDir = project.file(dockerDir)
+                    it.commandLine("docker", "push", tagConfig.tagTask())
                     it.dependsOn(tagSubTask)
                 }
                 pushAllTags.dependsOn(pushSubTask)
@@ -167,7 +172,7 @@ class GradleDockerPlugin: Plugin<Project> {
                 }
             }
             if (ext.builder != null) {
-                buildCommandLine.addAll(listOf("--builder", ext.builder))
+                buildCommandLine.addAll(listOf("--builder", ext.builder!!))
             }
         } else {
             buildCommandLine.add("build")
@@ -176,7 +181,7 @@ class GradleDockerPlugin: Plugin<Project> {
             buildCommandLine.add("--no-cache")
         }
         if (ext.network != null) {
-            buildCommandLine.addAll(listOf("--network", ext.network))
+            buildCommandLine.addAll(listOf("--network", ext.network!!))
         }
         if (ext.buildArgs.isNotEmpty()) {
             for ((key, value) in ext.buildArgs) {
@@ -197,10 +202,10 @@ class GradleDockerPlugin: Plugin<Project> {
                 buildCommandLine.addAll(listOf("--label", "$key=$value"))
             }
         }
-        if (ext.getPull()) {
+        if (ext.pull) {
             buildCommandLine.add("--pull")
         }
-        buildCommandLine.addAll(listOf("-t", { ext.name }.toString(), "."))
+        buildCommandLine.addAll(listOf("-t", ext.name ?: "", "."))
         return buildCommandLine
     }
 
