@@ -23,6 +23,54 @@ class GradleDockerPlugin: Plugin<Project> {
     companion object {
         private val log: Logger = Logging.getLogger(GradleDockerPlugin::class.java)
         private val LABEL_KEY_PATTERN: Pattern = Pattern.compile("^[a-z0-9.-]*$")
+        
+        @Deprecated("")
+        fun computeName(name: String, tag: String): String {
+            val firstAt = tag.indexOf("@")
+
+            val tagValue = if (firstAt > 0) {
+                tag.substring(firstAt + 1, tag.length)
+            } else {
+                tag
+            }
+
+            return if (tagValue.contains(':') || tagValue.contains('/')) {
+                // tag with ':' or '/' -> force use the tag value
+                tagValue
+            } else {
+                // tag without ':' and '/' -> replace the tag part of original name
+                val lastColon = name.lastIndexOf(':')
+                val lastSlash = name.lastIndexOf('/')
+
+                val endIndex = if (lastColon > lastSlash) lastColon else name.length
+
+                name.substring(0, endIndex) + ":" + tagValue
+            }
+        }
+        
+        @Deprecated("")
+        private fun generateTagTaskName(name: String): String {
+            var tagTaskName = name
+            val firstAt = name.indexOf("@")
+
+            tagTaskName = if (firstAt > 0) {
+                // Get substring of task name
+                name.substring(0, firstAt)
+            } else if (firstAt == 0) {
+                // Task name must not be empty
+                throw GradleException("Task name of docker tag '$name' must not be empty.")
+            } else if (name.contains(':') || name.contains('/')) {
+                // Tags which with repo or name must have a task name
+                throw GradleException("Docker tag '$name' must have a task name.")
+            } else {
+                name
+            }
+
+            val sb = StringBuilder(tagTaskName)
+            // Uppercase the first letter of task name
+            sb.replace(0, 1, tagTaskName.substring(0, 1).uppercase())
+            return sb.toString()
+        }
     }
 
     private val objectFactory: ObjectFactory
@@ -112,7 +160,7 @@ class GradleDockerPlugin: Plugin<Project> {
 
             val tags = mutableMapOf<String, TagConfig>()
             ext.namedTags.forEach { (taskName, tagName) ->
-                tags[generateTagTaskName(taskName)] = TagConfig(
+                tags[GradleDockerPlugin.generateTagTaskName(taskName)] = TagConfig(
                     tagName = tagName,
                     tagTask = { tagName }
                 )
@@ -120,7 +168,7 @@ class GradleDockerPlugin: Plugin<Project> {
 
             if (ext.tags.isNotEmpty()) {
                 ext.tags.forEach { unresolvedTagName ->
-                    val taskName = generateTagTaskName(unresolvedTagName)
+                    val taskName = GradleDockerPlugin.generateTagTaskName(unresolvedTagName)
 
                     if (tags.containsKey(taskName)) {
                         throw IllegalArgumentException("Task name '$taskName' already exists.")
@@ -128,7 +176,7 @@ class GradleDockerPlugin: Plugin<Project> {
 
                     tags[taskName] = TagConfig(
                         tagName = unresolvedTagName,
-                        tagTask = { computeName(ext.name ?: "", unresolvedTagName) }
+                        tagTask = { GradleDockerPlugin.computeName(ext.name ?: "", unresolvedTagName) }
                     )
                 }
             }
@@ -210,53 +258,7 @@ class GradleDockerPlugin: Plugin<Project> {
         return buildCommandLine
     }
 
-    @Deprecated("")
-    private fun computeName(name: String, tag: String): String {
-        val firstAt = tag.indexOf("@")
 
-        val tagValue = if (firstAt > 0) {
-            tag.substring(firstAt + 1, tag.length)
-        } else {
-            tag
-        }
-
-        return if (tagValue.contains(':') || tagValue.contains('/')) {
-            // tag with ':' or '/' -> force use the tag value
-            tagValue
-        } else {
-            // tag without ':' and '/' -> replace the tag part of original name
-            val lastColon = name.lastIndexOf(':')
-            val lastSlash = name.lastIndexOf('/')
-
-            val endIndex = if (lastColon > lastSlash) lastColon else name.length
-
-            name.substring(0, endIndex) + ":" + tagValue
-        }
-    }
-
-    @Deprecated("")
-    private fun generateTagTaskName(name: String): String {
-        var tagTaskName = name
-        val firstAt = name.indexOf("@")
-
-        tagTaskName = if (firstAt > 0) {
-            // Get substring of task name
-            name.substring(0, firstAt)
-        } else if (firstAt == 0) {
-            // Task name must not be empty
-            throw GradleException("Task name of docker tag '$name' must not be empty.")
-        } else if (name.contains(':') || name.contains('/')) {
-            // Tags which with repo or name must have a task name
-            throw GradleException("Docker tag '$name' must have a task name.")
-        } else {
-            name
-        }
-
-        val sb = StringBuilder(tagTaskName)
-        // Uppercase the first letter of task name
-        sb.replace(0, 1, tagTaskName.substring(0, 1).uppercase())
-        return sb.toString()
-    }
 
     private data class TagConfig(
         val tagName: String,

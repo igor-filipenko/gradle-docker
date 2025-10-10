@@ -68,6 +68,9 @@ open class DockerExtension(project: Project) {
     }
 
     fun resolvePathsAndValidate() {
+        if (name.isNullOrEmpty()) {
+            throw org.gradle.api.GradleException("name is a required docker configuration item.")
+        }
         resolvedDockerfile = dockerfile ?: project.file(DEFAULT_DOCKERFILE_PATH)
         resolvedDockerComposeFile = project.file(dockerComposeFile)
         resolvedDockerComposeTemplate = project.file(dockerComposeTemplate)

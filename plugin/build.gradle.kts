@@ -19,10 +19,12 @@ repositories {
 }
 
 dependencies {
-    testImplementation(gradleApi())
-    testImplementation(gradleTestKit())
     // Use the Kotlin Test integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test")
+    
+    // JUnit Jupiter dependencies
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
@@ -41,6 +43,11 @@ val functionalTestSourceSet = sourceSets.create("functionalTest") {
 
 configurations["functionalTestImplementation"].extendsFrom(configurations["testImplementation"])
 configurations["functionalTestRuntimeOnly"].extendsFrom(configurations["testRuntimeOnly"])
+
+// Add main source set as dependency for functional tests
+dependencies {
+    "functionalTestImplementation"(sourceSets["main"].output)
+}
 
 // Add a task to run the functional tests
 val functionalTest by tasks.registering(Test::class) {
