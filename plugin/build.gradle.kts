@@ -19,6 +19,8 @@ repositories {
 }
 
 dependencies {
+    testImplementation(gradleApi())
+    testImplementation(gradleTestKit())
     // Use the Kotlin Test integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 
@@ -28,7 +30,7 @@ dependencies {
 gradlePlugin {
     // Define the plugin
     val greeting by plugins.creating {
-        id = "ru.crystals.gradle.docker.greeting"
+        id = "ru.crystals.docker"
         implementationClass = "ru.crystals.gradle.docker.GradleDockerPlugin"
     }
 }

@@ -1,18 +1,11 @@
 package ru.crystals.gradle.docker
 
-import org.gradle.internal.impldep.com.google.common.collect.ImmutableSet
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.CopySpec
-import org.gradle.internal.impldep.com.google.api.client.util.Preconditions
-import org.gradle.internal.impldep.com.google.api.client.util.Strings
-import org.gradle.internal.impldep.com.google.common.collect.ImmutableMap
-import org.gradle.internal.impldep.com.google.common.collect.Sets
-import org.gradle.internal.logging.text.StyledTextOutput
-import org.gradle.internal.logging.text.StyledTextOutputFactory
 import java.io.File
 
-class DockerExtension(project: Project) {
+open class DockerExtension(project: Project) {
     val project: Project
 
     companion object {
@@ -23,16 +16,16 @@ class DockerExtension(project: Project) {
     var dockerfile: File? = null
     var dockerComposeTemplate: String = "docker-compose.yml.template"
     var dockerComposeFile: String = "docker-compose.yml"
-    var dependencies: Set<Task> = ImmutableSet.of()
-    var tags: Set<String> = ImmutableSet.of()
+    var dependencies: Set<Task> = emptySet()
+    var tags: Set<String> = emptySet()
     val namedTags: MutableMap<String, String> = HashMap()
-    var labels: Map<String, String> = ImmutableMap.of()
-    var buildArgs: Map<String, String> = ImmutableMap.of()
+    var labels: Map<String, String> = emptyMap()
+    var buildArgs: Map<String, String> = emptyMap()
     var pull: Boolean = false
     var noCache: Boolean = false
     var network: String? = null
     var buildx: Boolean = false
-    var platform: Set<String> = ImmutableSet.of()
+    var platform: Set<String> = emptySet()
     var load: Boolean = false
     var push: Boolean = false
     var builder: String? = null
@@ -50,7 +43,7 @@ class DockerExtension(project: Project) {
     }
 
     fun dependsOn(vararg args: Task) {
-        this.dependencies = ImmutableSet.copyOf(args)
+        this.dependencies = args.toSet()
     }
 
     fun files(vararg files: Any) {
@@ -59,11 +52,11 @@ class DockerExtension(project: Project) {
 
     @Deprecated("")
     fun tags(vararg args: String) {
-        this.tags = ImmutableSet.copyOf(args)
+        this.tags = args.toSet()
     }
 
     fun labels(labels: Map<String, String>) {
-        this.labels = ImmutableMap.copyOf(labels)
+        this.labels = labels.toMap()
     }
 
     fun getResolvedDockerComposeTemplate(): File? {
@@ -82,7 +75,7 @@ class DockerExtension(project: Project) {
 
 
     fun buildArgs(buildArgs: Map<String, String>) {
-        this.buildArgs = ImmutableMap.copyOf(buildArgs)
+        this.buildArgs = buildArgs.toMap()
     }
 
     fun pull(pull: Boolean) {
@@ -106,7 +99,7 @@ class DockerExtension(project: Project) {
     }
 
     fun platform(vararg args: String) {
-        this.platform = ImmutableSet.copyOf(args)
+        this.platform = args.toSet()
     }
 
     fun builder(builder: String) {

@@ -14,9 +14,11 @@ class GradleDockerPluginTest {
     @Test fun `plugin registers task`() {
         // Create a test project and apply the plugin
         val project = ProjectBuilder.builder().build()
-        project.plugins.apply("ru.crystals.gradle.docker.greeting")
+        project.plugins.apply("ru.crystals.docker")
 
         // Verify the result
-        assertNotNull(project.tasks.findByName("greeting"))
+        assertNotNull(project.tasks.findByName("docker"))
+        assertNotNull(project.tasks.findByName("dockerClean"))
+        assertNotNull(project.tasks.findByName("dockerPush"))
     }
 }

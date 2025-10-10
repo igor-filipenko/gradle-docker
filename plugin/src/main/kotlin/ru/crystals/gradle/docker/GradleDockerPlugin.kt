@@ -206,6 +206,7 @@ class GradleDockerPlugin: Plugin<Project> {
             buildCommandLine.add("--pull")
         }
         buildCommandLine.addAll(listOf("-t", ext.name ?: "", "."))
+        log.debug("Using command line: {}", buildCommandLine)
         return buildCommandLine
     }
 

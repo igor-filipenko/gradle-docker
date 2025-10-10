@@ -10,7 +10,7 @@ import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.io.TempDir
 
 /**
- * A simple functional test for the 'ru.crystals.gradle.docker.greeting' plugin.
+ * A simple functional test for the 'ru.crystals.docker' plugin.
  */
 class GradleDockerPluginFunctionalTest {
 
@@ -25,19 +25,32 @@ class GradleDockerPluginFunctionalTest {
         settingsFile.writeText("")
         buildFile.writeText("""
             plugins {
-                id('ru.crystals.gradle.docker.greeting')
+                id('ru.crystals.docker')
+            }
+            
+            docker {
+                name = 'test-image'
             }
         """.trimIndent())
 
-        // Run the build
+        // Create a simple Dockerfile for the test
+        val dockerfile = projectDir.resolve("Dockerfile")
+        dockerfile.writeText("""
+            FROM alpine:latest
+            RUN echo "Hello from test Docker image"
+        """.trimIndent())
+
+        // Run the build to check if tasks are created
         val runner = GradleRunner.create()
         runner.forwardOutput()
         runner.withPluginClasspath()
-        runner.withArguments("greeting")
+        runner.withArguments("--stacktrace", "tasks", "--group", "Docker")
         runner.withProjectDir(projectDir)
         val result = runner.build()
 
-        // Verify the result
-        assertTrue(result.output.contains("Hello from plugin 'ru.crystals.gradle.docker.greeting'"))
+        // Verify that Docker tasks are created
+        assertTrue(result.output.contains("docker"))
+        assertTrue(result.output.contains("dockerClean"))
+        assertTrue(result.output.contains("dockerPush"))
     }
 }
