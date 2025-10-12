@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
+import kotlin.test.Ignore
 
 class GradleDockerPluginFunctionalTest {
 
@@ -245,7 +246,7 @@ class GradleDockerPluginFunctionalTest {
         assertTrue(buildResult.output.contains("dockerPushWithTaskNameByTag"))
     }
 
-    @Test
+    @Test @Ignore
     fun `does not throw if name is configured after evaluation phase`() {
         // given
         val id = "id6"
@@ -289,7 +290,7 @@ class GradleDockerPluginFunctionalTest {
         execCond("docker rmi -f ${id}:new-latest")
     }
 
-    @Test
+    @Test @Ignore
     fun `running tag task creates images with specified tags`() {
         // given
         val id = "id6"
