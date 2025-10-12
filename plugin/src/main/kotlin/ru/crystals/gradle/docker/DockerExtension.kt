@@ -3,6 +3,9 @@ package ru.crystals.gradle.docker
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.CopySpec
+import org.gradle.internal.extensions.core.serviceOf
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 import java.io.File
 
 open class DockerExtension(project: Project) {
@@ -53,6 +56,14 @@ open class DockerExtension(project: Project) {
     @Deprecated("")
     fun tags(vararg args: String) {
         this.tags = args.toSet()
+    }
+
+    fun tag(taskName: String, tag: String) {
+        if (namedTags.putIfAbsent(taskName, tag) != null) {
+            val factory = project.objects.newInstance(StyledTextOutputFactory::class.java)
+            val output = factory.create(DockerExtension::class.java)
+            output.withStyle(StyledTextOutput.Style.Error).println("WARNING: Task name '${taskName}' is existed.")
+        }
     }
 
     fun labels(labels: Map<String, String>) {

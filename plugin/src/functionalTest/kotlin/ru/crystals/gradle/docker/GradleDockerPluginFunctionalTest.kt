@@ -314,11 +314,11 @@ class GradleDockerPluginFunctionalTest {
 
             task printInfo {
                 doLast {
-                    println "LATEST: \$\{tasks.dockerTagLatest.commandLine\}"
-                    println "ANOTHER: \$\{tasks.dockerTagAnother.commandLine\}"
-                    println "WITH_TASK_NAME: \$\{tasks.dockerTagWithTaskName.commandLine\}"
-                    println "NEW_IMAGE_NAME: \$\{tasks.dockerTagNewImageName.commandLine\}"
-                    println "WITH_TASK_NAME_BY_TAG: \$\{tasks.dockerTagWithTaskNameByTag.commandLine\}"
+                    println "LATEST: $${""}{tasks.dockerTagLatest.commandLine}"
+                    println "ANOTHER: $${""}{tasks.dockerTagAnother.commandLine}"
+                    println "WITH_TASK_NAME: $${""}{tasks.dockerTagWithTaskName.commandLine}"
+                    println "NEW_IMAGE_NAME: $${""}{tasks.dockerTagNewImageName.commandLine}"
+                    println "WITH_TASK_NAME_BY_TAG: $${""}{tasks.dockerTagWithTaskNameByTag.commandLine}"
                 }
             }
         """.trimIndent())
@@ -357,8 +357,8 @@ class GradleDockerPluginFunctionalTest {
             FROM alpine:latest
             ARG BUILD_ARG_NO_DEFAULT
             ARG BUILD_ARG_WITH_DEFAULT=defaultBuildArg
-            ENV ENV_BUILD_ARG_NO_DEFAULT $${"$"}{BUILD_ARG_NO_DEFAULT}
-            ENV ENV_BUILD_ARG_WITH_DEFAULT $${"$"}{BUILD_ARG_WITH_DEFAULT}
+            ENV ENV_BUILD_ARG_NO_DEFAULT $${""}BUILD_ARG_NO_DEFAULT
+            ENV ENV_BUILD_ARG_WITH_DEFAULT $${""}BUILD_ARG_WITH_DEFAULT
         """.trimIndent())
         buildFile.writeText("""
             plugins {

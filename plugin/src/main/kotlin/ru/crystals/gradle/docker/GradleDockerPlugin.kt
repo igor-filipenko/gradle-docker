@@ -133,7 +133,7 @@ class GradleDockerPlugin: Plugin<Project> {
 
         project.afterEvaluate {
             ext.resolvePathsAndValidate()
-            val dockerDir = "${project.layout.buildDirectory}/docker"
+            val dockerDir = project.layout.buildDirectory.get().toString() + "/docker"
             clean.configure { it.delete(dockerDir) }
 
             prepare.configure { task ->
