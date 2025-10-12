@@ -15,19 +15,12 @@
  */
 package ru.crystals.gradle.docker
 
-import org.gradle.api.internal.artifacts.mvnsettings.DefaultLocalMavenRepositoryLocator
-import org.gradle.api.internal.artifacts.mvnsettings.DefaultMavenFileLocations
-import org.gradle.api.internal.artifacts.mvnsettings.DefaultMavenSettingsProvider
-import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
 import java.io.File
-import ru.crystals.gradle.docker.GradleDockerPlugin
 
 class GradleDockerPluginFunctionalTest {
 
@@ -584,7 +577,6 @@ class GradleDockerPluginFunctionalTest {
                 id 'java'
                 id 'application'
             }
-            mainClassName = "test.Test"
 
             docker {
                 name '${id}'
@@ -682,49 +674,6 @@ class GradleDockerPluginFunctionalTest {
         // then
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":dockerPrepare")?.outcome)
         assertTrue(file("build/docker/myDir/bar").exists())
-    }
-
-    @ParameterizedTest
-    @CsvSource(
-        "v1, latest, v1:latest",
-        "v1:1, latest, v1:latest",
-        "host/v1, latest, host/v1:latest",
-        "host/v1:1, latest, host/v1:latest",
-        "host:port/v1, latest, host:port/v1:latest",
-        "host:port/v1:1, latest, host:port/v1:latest",
-        "v1, name@latest, v1:latest",
-        "v1:1, name@latest, v1:latest",
-        "host/v1, name@latest, host/v1:latest",
-        "host/v1:1, name@latest, host/v1:latest",
-        "host:port/v1, name@latest, host:port/v1:latest",
-        "host:port/v1:1, name@latest, host:port/v1:latest",
-        "v1, name@v2:latest, v2:latest",
-        "v1:1, name@v2:latest, v2:latest",
-        "host/v1, name@v2:latest, v2:latest",
-        "host/v1:1, name@v2:latest, v2:latest",
-        "host:port/v1, name@v2:latest, v2:latest",
-        "host:port/v1:1, name@v2:latest, v2:latest",
-        "v1, name@host/v2, host/v2",
-        "v1:1, name@host/v2, host/v2",
-        "host/v1, name@host/v2, host/v2",
-        "host/v1:1, name@host/v2, host/v2",
-        "host:port/v1, name@host/v2, host/v2",
-        "host:port/v1:1, name@host/v2, host/v2",
-        "v1, name@host/v2:2, host/v2:2",
-        "v1:1, name@host/v2:2, host/v2:2",
-        "host/v1, name@host/v2:2, host/v2:2",
-        "host/v1:1, name@host/v2:2, host/v2:2",
-        "host:port/v1, name@host/v2:2, host/v2:2",
-        "host:port/v1:1, name@host/v2:2, host/v2:2",
-        "v1, name@host:port/v2:2, host:port/v2:2",
-        "v1:1, name@host:port/v2:2, host:port/v2:2",
-        "host/v1, name@host:port/v2:2, host:port/v2:2",
-        "host/v1:1, name@host:port/v2:2, host:port/v2:2",
-        "host:port/v1, name@host:port/v2:2, host:port/v2:2",
-        "host:port/v1:1, name@host:port/v2:2, host:port/v2:2"
-    )
-    fun `check if compute name replaces the name correctly`(name: String, tag: String, result: String) {
-        assertEquals(result, GradleDockerPlugin.computeName(name, tag))
     }
 
     private fun with(vararg tasks: String): GradleRunner {

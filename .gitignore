@@ -4,6 +4,9 @@
 # Ignore Gradle build output directory
 build
 
+# Cursor AI
+.vscode/
+
 # JetBrains IDEs
 .idea/
 *.iws

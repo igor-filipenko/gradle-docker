@@ -31,7 +31,7 @@ dependencies {
 
 gradlePlugin {
     // Define the plugin
-    val greeting by plugins.creating {
+    val docker by plugins.creating {
         id = "ru.crystals.docker"
         implementationClass = "ru.crystals.gradle.docker.GradleDockerPlugin"
     }
