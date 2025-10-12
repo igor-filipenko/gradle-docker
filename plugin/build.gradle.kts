@@ -11,6 +11,8 @@ plugins {
 
     // Apply the Kotlin JVM plugin to add support for Kotlin.
     alias(libs.plugins.kotlin.jvm)
+
+    id("com.gradle.plugin-publish") version "1.2.1"
 }
 
 repositories {
@@ -29,10 +31,27 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+group = "ru.crystals"
+version = "0.0.0"
+
+publishing {
+    repositories {
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
+    }
+}
+
 gradlePlugin {
+    website = "https://github.com/igor-filipenko/gradle-docker"
+    vcsUrl = "https://github.com/igor-filipenko/gradle-docker"
+
     // Define the plugin
     val docker by plugins.creating {
         id = "ru.crystals.docker"
+        displayName = "Gradle Docker plugin"
+        description = "Gradle plugin for Docker"
+        tags = listOf("docker")
         implementationClass = "ru.crystals.gradle.docker.GradleDockerPlugin"
     }
 }
