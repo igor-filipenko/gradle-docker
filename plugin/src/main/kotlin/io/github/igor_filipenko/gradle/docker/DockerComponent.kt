@@ -1,4 +1,4 @@
-package ru.crystals.gradle.docker
+package io.github.igor_filipenko.gradle.docker
 
 import org.gradle.api.artifacts.*
 import org.gradle.api.attributes.AttributeContainer

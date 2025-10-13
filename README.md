@@ -16,7 +16,7 @@ A lightweight Gradle plugin for building and pushing Docker images, designed as 
 
 **Groovy DSL:**
 ```gradle
-apply plugin: 'ru.crystals.docker'
+apply plugin: 'io.github.igor_filipenko.docker'
 
 docker {
     name "myapp"
