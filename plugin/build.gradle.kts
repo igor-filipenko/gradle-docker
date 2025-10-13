@@ -32,7 +32,7 @@ dependencies {
 }
 
 group = "io.github.igor_filipenko"
-version = "0.0.0"
+version = "0.0.2"
 
 publishing {
     repositories {
