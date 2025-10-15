@@ -11,7 +11,7 @@ class GradleDockerPluginTest {
 
     @Test fun `plugin registers task`() {
         val project = ProjectBuilder.builder().build()
-        project.plugins.apply("io.github.igor_filipenko.docker")
+        project.plugins.apply("io.github.igor-filipenko.docker")
 
         assertNotNull(project.tasks.findByName("docker"))
         assertNotNull(project.tasks.findByName("dockerClean"))

@@ -36,7 +36,7 @@ class GradleDockerPluginFunctionalTest {
         // given
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
         """.trimIndent())
 
@@ -52,7 +52,7 @@ class GradleDockerPluginFunctionalTest {
         // given
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
             docker {
                 name ''
@@ -76,7 +76,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -104,7 +104,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -135,7 +135,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -167,7 +167,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
             docker {
                 name '${id}'
@@ -195,7 +195,7 @@ class GradleDockerPluginFunctionalTest {
         file("Dockerfile").writeText("Foo")
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -220,7 +220,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -256,7 +256,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -300,7 +300,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -363,7 +363,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -394,7 +394,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -427,7 +427,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -456,7 +456,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -492,7 +492,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -527,7 +527,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             task myTgz(type: Tar) {
@@ -574,7 +574,7 @@ class GradleDockerPluginFunctionalTest {
 
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
                 id 'java'
                 id 'application'
             }
@@ -604,7 +604,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -630,7 +630,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {
@@ -660,7 +660,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
         buildFile.writeText("""
             plugins {
-                id 'io.github.igor_filipenko.docker'
+                id 'io.github.igor-filipenko.docker'
             }
 
             docker {

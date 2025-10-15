@@ -31,7 +31,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-group = "io.github.igor_filipenko"
+group = "io.github.igor-filipenko"
 version = "0.0.2"
 
 publishing {
@@ -48,7 +48,7 @@ gradlePlugin {
 
     // Define the plugin
     val docker by plugins.creating {
-        id = "io.github.igor_filipenko.docker"
+        id = "io.github.igor-filipenko.docker"
         displayName = "Gradle Docker plugin"
         description = "Gradle plugin for Docker"
         tags = listOf("docker")
