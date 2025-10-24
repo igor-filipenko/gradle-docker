@@ -3,6 +3,7 @@ package io.github.igor_filipenko.gradle.docker
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.CopySpec
+import org.gradle.api.provider.Property
 import org.gradle.internal.extensions.core.serviceOf
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
@@ -15,7 +16,18 @@ open class DockerExtension(project: Project) {
         private const val DEFAULT_DOCKERFILE_PATH = "Dockerfile"
     }
 
-    var name: String? = null
+    val nameProp = project.objects.property<String>(String::class.java)
+    var name: String
+        get() = getNameOrThrow()
+        set(value) = nameProp.set(value)
+
+    private fun getNameOrThrow(): String {
+        if (!nameProp.isPresent || nameProp.get().isEmpty()) {
+            throw org.gradle.api.GradleException("name is a required docker configuration item.")
+        }
+        return nameProp.get()
+    }
+
     var dockerfile: File? = null
     var dockerComposeTemplate: String = "docker-compose.yml.template"
     var dockerComposeFile: String = "docker-compose.yml"
@@ -79,9 +91,6 @@ open class DockerExtension(project: Project) {
     }
 
     fun resolvePathsAndValidate() {
-        if (name.isNullOrEmpty()) {
-            throw org.gradle.api.GradleException("name is a required docker configuration item.")
-        }
         resolvedDockerfile = dockerfile ?: project.file(DEFAULT_DOCKERFILE_PATH)
         resolvedDockerComposeFile = project.file(dockerComposeFile)
         resolvedDockerComposeTemplate = project.file(dockerComposeTemplate)

@@ -246,7 +246,7 @@ class GradleDockerPluginFunctionalTest {
         assertTrue(buildResult.output.contains("dockerPushWithTaskNameByTag"))
     }
 
-    @Test @Ignore
+    @Test
     fun `does not throw if name is configured after evaluation phase`() {
         // given
         val id = "id6"
@@ -270,7 +270,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
 
         // when
-        val buildResult = with("dockerTag").build()
+        val buildResult = with("--stacktrace", "dockerTag").build()
 
         // then
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":dockerPrepare")?.outcome)
@@ -290,7 +290,7 @@ class GradleDockerPluginFunctionalTest {
         execCond("docker rmi -f ${id}:new-latest")
     }
 
-    @Test @Ignore
+    @Test
     fun `running tag task creates images with specified tags`() {
         // given
         val id = "id6"
@@ -325,7 +325,7 @@ class GradleDockerPluginFunctionalTest {
         """.trimIndent())
 
         // when
-        val buildResult = with("dockerTag", "printInfo").build()
+        val buildResult = with("--stacktrace", "dockerTag", "printInfo").build()
 
         // then
         assertTrue(buildResult.output.contains("LATEST: [docker, tag, ${id}, ${id}:latest]"))

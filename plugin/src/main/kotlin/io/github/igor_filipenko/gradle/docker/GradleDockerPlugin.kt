@@ -176,7 +176,7 @@ class GradleDockerPlugin: Plugin<Project> {
 
                     tags[taskName] = TagConfig(
                         tagName = unresolvedTagName,
-                        tagTask = { GradleDockerPlugin.computeName(ext.name ?: "", unresolvedTagName) }
+                        tagTask = { GradleDockerPlugin.computeName(ext.name, unresolvedTagName) }
                     )
                 }
             }
@@ -186,8 +186,12 @@ class GradleDockerPlugin: Plugin<Project> {
                     it.group = "Docker"
                     it.description = "Tags Docker image with tag '${tagConfig.tagName}'"
                     it.workingDir = project.file(dockerDir)
-                    it.commandLine("docker", "tag", ext.name ?: "", tagConfig.tagTask())
                     it.dependsOn(exec)
+                    val commandLineProvider = project.provider { listOf("docker", "tag", ext.name ?: "", tagConfig.tagTask()) }
+                    val task = it
+                    it.doFirst {
+                        task.commandLine = commandLineProvider.get()
+                    }
                 }
                 tag.dependsOn(tagSubTask)
 
@@ -195,8 +199,12 @@ class GradleDockerPlugin: Plugin<Project> {
                     it.group = "Docker"
                     it.description = "Pushes the Docker image with tag '${tagConfig.tagName}' to configured Docker Hub"
                     it.workingDir = project.file(dockerDir)
-                    it.commandLine("docker", "push", tagConfig.tagTask())
                     it.dependsOn(tagSubTask)
+                    val commandLineProvider = project.provider { listOf("docker", "push", tagConfig.tagTask()) }
+                    val task = it
+                    it.doFirst {
+                        task.commandLine = commandLineProvider.get()
+                    }
                 }
                 pushAllTags.dependsOn(pushSubTask)
             }
