@@ -29,8 +29,6 @@ open class DockerExtension(project: Project) {
     }
 
     var dockerfile: File? = null
-    var dockerComposeTemplate: String = "docker-compose.yml.template"
-    var dockerComposeFile: String = "docker-compose.yml"
     var dependencies: Set<Task> = emptySet()
     var tags: Set<String> = emptySet()
     val namedTags: MutableMap<String, String> = HashMap()
@@ -46,8 +44,6 @@ open class DockerExtension(project: Project) {
     var builder: String? = null
 
     var resolvedDockerfile: File? = null
-    private var resolvedDockerComposeTemplate: File? = null
-    private var resolvedDockerComposeFile: File? = null
 
     // The CopySpec defining the Docker Build Context files
     val copySpec: CopySpec
@@ -82,20 +78,9 @@ open class DockerExtension(project: Project) {
         this.labels = labels.toMap()
     }
 
-    fun getResolvedDockerComposeTemplate(): File? {
-        return resolvedDockerComposeTemplate
-    }
-
-    fun getResolvedDockerComposeFile(): File? {
-        return resolvedDockerComposeFile
-    }
-
     fun resolvePathsAndValidate() {
         resolvedDockerfile = dockerfile ?: project.file(DEFAULT_DOCKERFILE_PATH)
-        resolvedDockerComposeFile = project.file(dockerComposeFile)
-        resolvedDockerComposeTemplate = project.file(dockerComposeTemplate)
     }
-
 
     fun buildArgs(buildArgs: Map<String, String>) {
         this.buildArgs = buildArgs.toMap()
