@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import kotlin.test.Ignore
 
 class GradleDockerPluginFunctionalTest {
 
@@ -675,6 +674,68 @@ class GradleDockerPluginFunctionalTest {
         // then
         assertEquals(TaskOutcome.SUCCESS, buildResult.task(":dockerPrepare")?.outcome)
         assertTrue(file("build/docker/myDir/bar").exists())
+    }
+
+    @Test
+    fun `push tags should be configured after evaluation phase`() {
+        // given
+        val id = "id6"
+        file("Dockerfile").writeText("""
+            FROM alpine:3.2
+            MAINTAINER ${id}
+        """.trimIndent())
+        buildFile.writeText("""
+            plugins {
+                id 'io.github.igor-filipenko.docker'
+            }
+
+            docker {
+                tags 'latest', 'another', 'withTaskName@2.0', 'newImageName@${id}-new:latest'
+                tag 'withTaskNameByTag', '${id}:new-latest'
+            }
+
+            afterEvaluate {
+                docker.name = '${id}'
+            }
+        """.trimIndent())
+
+        // when
+        val buildResult = with("tasks").build()
+
+        // then
+        assertTrue(buildResult.output.contains("dockerPush "));
+        assertTrue(buildResult.output.contains("dockerPushLatest"));
+        assertTrue(buildResult.output.contains("dockerPushNewImageName"));
+        assertTrue(buildResult.output.contains("dockerPushWithTaskName"));
+        assertTrue(buildResult.output.contains("dockerPushWithTaskNameByTag"));
+    }
+
+    @Test
+    fun `should create tag from version`() {
+        // given
+        val id = "id6:1.2.3-SNAPSHOT"
+        file("Dockerfile").writeText("""
+            FROM alpine:3.2
+            MAINTAINER ${id}
+        """.trimIndent())
+        buildFile.writeText("""
+            plugins {
+                id 'io.github.igor-filipenko.docker'
+            }
+            
+            version = '1.2.3-SNAPSHOT'
+
+            docker {
+                name '${id}'
+            }
+        """.trimIndent())
+
+        // when
+        val buildResult = with("--stacktrace", "tasks").build()
+
+        // then
+        assertTrue(buildResult.output.contains("dockerPush1.2.3-SNAPSHOT"));
+        assertTrue(buildResult.output.contains("dockerTag1.2.3-SNAPSHOT"));
     }
 
     private fun with(vararg tasks: String): GradleRunner {

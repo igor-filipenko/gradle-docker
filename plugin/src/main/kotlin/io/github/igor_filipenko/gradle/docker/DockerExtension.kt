@@ -28,9 +28,16 @@ open class DockerExtension(project: Project) {
         return nameProp.get()
     }
 
+    var tags: Set<String> = emptySet()
+        get() = getTagsWithProjectVersion(field)
+
+    private fun getTagsWithProjectVersion(currentTags: Set<String>): Set<String> {
+        return if (!currentTags.isEmpty()) currentTags + project.version.toString()
+        else setOf(project.version.toString())
+    }
+
     var dockerfile: File? = null
     var dependencies: Set<Task> = emptySet()
-    var tags: Set<String> = emptySet()
     val namedTags: MutableMap<String, String> = HashMap()
     var labels: Map<String, String> = emptyMap()
     var buildArgs: Map<String, String> = emptyMap()
