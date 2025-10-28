@@ -1,8 +1,8 @@
 package io.github.igor_filipenko.gradle.docker
 
 import org.gradle.api.GradleException
-import org.gradle.api.Project
 import org.gradle.api.Plugin
+import org.gradle.api.Project
 import org.gradle.api.internal.attributes.AttributesFactory
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.logging.Logger
@@ -24,7 +24,6 @@ class GradleDockerPlugin: Plugin<Project> {
         private val log: Logger = Logging.getLogger(GradleDockerPlugin::class.java)
         private val LABEL_KEY_PATTERN: Pattern = Pattern.compile("^[a-z0-9.-]*$")
         
-        @Deprecated("")
         fun computeName(name: String, tag: String): String {
             val firstAt = tag.indexOf("@")
 
@@ -48,7 +47,6 @@ class GradleDockerPlugin: Plugin<Project> {
             }
         }
         
-        @Deprecated("")
         private fun generateTagTaskName(name: String): String {
             var tagTaskName = name
             val firstAt = name.indexOf("@")
@@ -105,13 +103,13 @@ class GradleDockerPlugin: Plugin<Project> {
             it.dependsOn(prepare)
         }
 
-        val tag = project.tasks.create("dockerTag") {
+        val tag = project.tasks.register("dockerTag") {
             it.group = "Docker"
             it.description = "Applies all tags to the Docker image."
             it.dependsOn(exec)
         }
 
-        val pushAllTags = project.tasks.create("dockerTagsPush") {
+        val pushAllTags = project.tasks.register("dockerTagsPush") {
             it.group = "Docker"
             it.description = "Pushes all tagged Docker images to configured Docker Hub."
         }
@@ -160,7 +158,7 @@ class GradleDockerPlugin: Plugin<Project> {
 
             val tags = mutableMapOf<String, TagConfig>()
             ext.namedTags.forEach { (taskName, tagName) ->
-                tags[GradleDockerPlugin.generateTagTaskName(taskName)] = TagConfig(
+                tags[generateTagTaskName(taskName)] = TagConfig(
                     tagName = tagName,
                     tagTask = { tagName }
                 )
@@ -168,7 +166,7 @@ class GradleDockerPlugin: Plugin<Project> {
 
             if (ext.tags.isNotEmpty()) {
                 ext.tags.forEach { unresolvedTagName ->
-                    val taskName = GradleDockerPlugin.generateTagTaskName(unresolvedTagName)
+                    val taskName = generateTagTaskName(unresolvedTagName)
 
                     if (tags.containsKey(taskName)) {
                         throw IllegalArgumentException("Task name '$taskName' already exists.")
@@ -176,26 +174,26 @@ class GradleDockerPlugin: Plugin<Project> {
 
                     tags[taskName] = TagConfig(
                         tagName = unresolvedTagName,
-                        tagTask = { GradleDockerPlugin.computeName(ext.name, unresolvedTagName) }
+                        tagTask = { computeName(ext.name, unresolvedTagName) }
                     )
                 }
             }
 
             tags.forEach { (taskName, tagConfig) ->
-                val tagSubTask = project.tasks.create("dockerTag$taskName", Exec::class.java) {
+                val tagSubTask = project.tasks.register("dockerTag$taskName", Exec::class.java) {
                     it.group = "Docker"
                     it.description = "Tags Docker image with tag '${tagConfig.tagName}'"
                     it.workingDir = project.file(dockerDir)
                     it.dependsOn(exec)
-                    val commandLineProvider = project.provider { listOf("docker", "tag", ext.name ?: "", tagConfig.tagTask()) }
+                    val commandLineProvider = project.provider { listOf("docker", "tag", ext.name, tagConfig.tagTask()) }
                     val task = it
                     it.doFirst {
                         task.commandLine = commandLineProvider.get()
                     }
                 }
-                tag.dependsOn(tagSubTask)
+                tag.get().dependsOn(tagSubTask)
 
-                val pushSubTask = project.tasks.create("dockerPush$taskName", Exec::class.java) {
+                val pushSubTask = project.tasks.register("dockerPush$taskName", Exec::class.java) {
                     it.group = "Docker"
                     it.description = "Pushes the Docker image with tag '${tagConfig.tagName}' to configured Docker Hub"
                     it.workingDir = project.file(dockerDir)
@@ -206,7 +204,7 @@ class GradleDockerPlugin: Plugin<Project> {
                         task.commandLine = commandLineProvider.get()
                     }
                 }
-                pushAllTags.dependsOn(pushSubTask)
+                pushAllTags.get().dependsOn(pushSubTask)
             }
         }
     }
@@ -261,7 +259,7 @@ class GradleDockerPlugin: Plugin<Project> {
         if (ext.pull) {
             buildCommandLine.add("--pull")
         }
-        buildCommandLine.addAll(listOf("-t", ext.name ?: "", "."))
+        buildCommandLine.addAll(listOf("-t", ext.name, "."))
         log.debug("Using command line: {}", buildCommandLine)
         return buildCommandLine
     }

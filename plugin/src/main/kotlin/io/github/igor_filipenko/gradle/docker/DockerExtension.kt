@@ -3,8 +3,6 @@ package io.github.igor_filipenko.gradle.docker
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.CopySpec
-import org.gradle.api.provider.Property
-import org.gradle.internal.extensions.core.serviceOf
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import java.io.File
@@ -68,7 +66,6 @@ open class DockerExtension(project: Project) {
         copySpec.from(*files)
     }
 
-    @Deprecated("")
     fun tags(vararg args: String) {
         this.tags = args.toSet()
     }
